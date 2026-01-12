@@ -1,0 +1,16 @@
+if SHIELD_RS69LP_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "RS69-LP"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif # SHIELD_RS69LP_LEFT
+
+if SHIELD_RS69LP_LEFT || SHIELD_RS69LP_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+endif # SHIELD_RS69LP_LEFT || SHIELD_RS69LP_RIGHT

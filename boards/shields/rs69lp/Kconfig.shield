@@ -1,0 +1,5 @@
+config SHIELD_RS69LP_LEFT
+    def_bool $(shields_list_contains,rs69lp_left)
+
+config SHIELD_RS69LP_RIGHT
+    def_bool $(shields_list_contains,rs69lp_right)
