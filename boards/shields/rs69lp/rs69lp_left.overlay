@@ -20,21 +20,22 @@
 /* Gemini Display remapping code below */
 
 /* --------------------------------------------------------- */
-/* CUSTOM SPI CONFIGURATION FOR SWAPPED PINS                */
+/* FORCE SPI PIN SWAP for nice!view                          */
 /* --------------------------------------------------------- */
 
-/* 1. Define the Hardware Pins (Pinctrl) */
 &pinctrl {
+    /* Define your custom state */
     spi0_custom: spi0_custom {
         group1 {
-            /* SCK  -> D2 (P0.17) [SWAPPED] */
+            /* SCK  -> D2 (P0.17) [User Requested] */
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
             
-            /* MOSI -> D3 (P0.20) [SWAPPED] */
+            /* MOSI -> D3 (P0.20) [User Requested] */
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
             
-            /* MISO -> D0 (P0.08) [DUMMY - Required by driver] */
-                    <NRF_PSEL(SPIM_MISO, 0, 8)>; 
+            /* MISO -> P1.00 [Internal Dummy Pin] */
+            /* We use P1.00 to ensure we don't block D0 */
+                    <NRF_PSEL(SPIM_MISO, 1, 0)>; 
         };
     };
 
@@ -42,21 +43,21 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
-                    <NRF_PSEL(SPIM_MISO, 0, 8)>;
+                    <NRF_PSEL(SPIM_MISO, 1, 0)>;
             low-power-enable;
         };
     };
 };
 
-/* 2. Configure the Bus & Chip Select */
-&nice_nano_v2_spi {
-    status = "okay";
-    
-    /* Use the custom pins defined above */
+&pro_micro_spi {
+    /* 1. Delete old pinctrl properties to remove 'nice_view_adapter' defaults */
+    /delete-property/ pinctrl-0;
+    /delete-property/ pinctrl-1;
+
+    /* 2. Assign our new custom states */
     pinctrl-0 = <&spi0_custom>;
     pinctrl-1 = <&spi0_custom_sleep>;
-    pinctrl-names = "default", "sleep";
-
-    /* Chip Select on D1 (Pin 1) */
-    cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>;
+    
+    /* 3. Ensure the bus is enabled */
+    status = "okay";
 };
