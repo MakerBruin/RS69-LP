@@ -25,8 +25,11 @@
 /* --------------------------------------------------------- */
 /* PIN SWAP ONLY (Relies on 'nice_view' shield for driver)   */
 /* --------------------------------------------------------- */
+/* --------------------------------------------------------- */
+/* MANUAL PIN SWAP + ADAPTER EMULATION                       */
+/* --------------------------------------------------------- */
 
-/* 1. Define the Swapped Hardware Pins */
+/* 1. Define the Hardware Pins */
 &pinctrl {
     spi0_custom: spi0_custom {
         group1 {
@@ -51,11 +54,17 @@
     };
 };
 
-/* 2. Overwrite the bus pins */
-&pro_micro_spi {
-    /* We do NOT define ls0xx here. The 'nice_view' shield does it for us. */
-    /* We only point the bus to our new pins. */
+/* 2. Configure the Bus & Provide the MISSING LABEL */
+/* The 'nice_view_spi:' label below fixes the build error */
+
+nice_view_spi: &pro_micro_spi {
+    status = "okay";
     
+    /* Apply our custom pins */
     pinctrl-0 = <&spi0_custom>;
     pinctrl-1 = <&spi0_custom_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    /* Define CS on D1 (Required because adapter is gone) */
+    cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>;
 };
