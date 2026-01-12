@@ -53,7 +53,7 @@
 };
 
 /* 2. Configure the Bus & Chip Select */
-&nice_view_spi {
+&nice_nano_v2_spi {
     status = "okay";
     
     /* Use the custom pins defined above */
