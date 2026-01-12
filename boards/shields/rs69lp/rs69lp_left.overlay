@@ -18,23 +18,19 @@
 
 
 /* Gemini Display remapping code below */
-
 /* --------------------------------------------------------- */
-/* FORCE SPI PIN SWAP for nice!view                          */
+/* MANUAL DISPLAY DEFINITION (Replaces nice_view_adapter)    */
 /* --------------------------------------------------------- */
 
+/* 1. Define the Hardware Pins */
 &pinctrl {
-    /* Define your custom state */
     spi0_custom: spi0_custom {
         group1 {
-            /* SCK  -> D2 (P0.17) [User Requested] */
+            /* SCK  -> D2 (P0.17) [SWAPPED] */
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
-            
-            /* MOSI -> D3 (P0.20) [User Requested] */
+            /* MOSI -> D3 (P0.20) [SWAPPED] */
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
-            
-            /* MISO -> P1.00 [Internal Dummy Pin] */
-            /* We use P1.00 to ensure we don't block D0 */
+            /* MISO -> P1.00 [Internal Dummy] */
                     <NRF_PSEL(SPIM_MISO, 1, 0)>; 
         };
     };
@@ -49,15 +45,31 @@
     };
 };
 
+/* 2. Configure the SPI Bus & Display Driver */
 &pro_micro_spi {
-    /* 1. Delete old pinctrl properties to remove 'nice_view_adapter' defaults */
-    /delete-property/ pinctrl-0;
-    /delete-property/ pinctrl-1;
-
-    /* 2. Assign our new custom states */
+    status = "okay";
+    
+    /* Apply our custom pins */
     pinctrl-0 = <&spi0_custom>;
     pinctrl-1 = <&spi0_custom_sleep>;
-    
-    /* 3. Ensure the bus is enabled */
-    status = "okay";
+    pinctrl-names = "default", "sleep";
+
+    /* Chip Select on D1 (Pin 1) */
+    cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>;
+
+    /* Define the Display Driver Manually */
+    nice_view_display: ls0xx@0 {
+        compatible = "sharp,ls0xx";
+        spi-max-frequency = <1000000>; /* 1MHz is safe/stable */
+        reg = <0>; /* CS index 0 */
+        width = <160>;
+        height = <68>;
+    };
+};
+
+/* 3. Tell ZMK to use this display */
+/ {
+    chosen {
+        zmk,display = &nice_view_display;
+    };
 };
