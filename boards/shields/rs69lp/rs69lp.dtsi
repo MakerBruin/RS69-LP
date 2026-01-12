@@ -3,7 +3,7 @@
 // instructions.
 
 #include <dt-bindings/zmk/matrix_transform.h>
-#include "rs69lp-layouts.dtsi"
+// include "rs69lp-layouts.dtsi"
 
 / {
     chosen {

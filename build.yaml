@@ -19,6 +19,6 @@
 #
 include:
   - board:  nice_nano_v2
-    shield: RS69LP_LEFT nice_view_adapter nice_view
+    shield: rs69lp_left nice_view_adapter nice_view
   - board:  nice_nano_v2
-    shield: RS69LP_RIGHT nice_view_adapter nice_view
+    shield: rs69lp_right nice_view_adapter nice_view
