@@ -22,19 +22,20 @@
 
 
 /* Gemini Display remapping code below */
-
 /* --------------------------------------------------------- */
-/* MANUAL DISPLAY DEFINITION (Replaces nice_view_adapter)    */
+/* PIN SWAP ONLY (Relies on 'nice_view' shield for driver)   */
 /* --------------------------------------------------------- */
 
-/* 1. Define the Hardware Pins */
+/* 1. Define the Swapped Hardware Pins */
 &pinctrl {
     spi0_custom: spi0_custom {
         group1 {
             /* SCK  -> D2 (P0.17) [SWAPPED] */
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
+            
             /* MOSI -> D3 (P0.20) [SWAPPED] */
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
+            
             /* MISO -> P1.00 [Internal Dummy] */
                     <NRF_PSEL(SPIM_MISO, 1, 0)>; 
         };
@@ -50,31 +51,11 @@
     };
 };
 
-/* 2. Configure the SPI Bus & Display Driver */
+/* 2. Overwrite the bus pins */
 &pro_micro_spi {
-    status = "okay";
+    /* We do NOT define ls0xx here. The 'nice_view' shield does it for us. */
+    /* We only point the bus to our new pins. */
     
-    /* Apply our custom pins */
     pinctrl-0 = <&spi0_custom>;
     pinctrl-1 = <&spi0_custom_sleep>;
-    pinctrl-names = "default", "sleep";
-
-    /* Chip Select on D1 (Pin 1) */
-    cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>;
-
-    /* Define the Display Driver Manually */
-    nice_view_display: ls0xx@0 {
-        compatible = "sharp,ls0xx";
-        spi-max-frequency = <1000000>; /* 1MHz is safe/stable */
-        reg = <0>; /* CS index 0 */
-        width = <160>;
-        height = <68>;
-    };
-};
-
-/* 3. Tell ZMK to use this display */
-/ {
-    chosen {
-        zmk,display = &nice_view_display;
-    };
 };
