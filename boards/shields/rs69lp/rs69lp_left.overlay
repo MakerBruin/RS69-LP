@@ -19,14 +19,22 @@
 
 /* Gemini Display remapping code below */
 
+/* --------------------------------------------------------- */
+/* CUSTOM SPI CONFIGURATION FOR SWAPPED PINS                */
+/* --------------------------------------------------------- */
+
+/* 1. Define the Hardware Pins (Pinctrl) */
 &pinctrl {
     spi0_custom: spi0_custom {
         group1 {
-            /* SCK to D2 (P0.17) */
+            /* SCK  -> D2 (P0.17) [SWAPPED] */
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
-            /* MOSI to D3 (P0.20) */
+            
+            /* MOSI -> D3 (P0.20) [SWAPPED] */
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
-
+            
+            /* MISO -> D0 (P0.08) [DUMMY - Required by driver] */
+                    <NRF_PSEL(SPIM_MISO, 0, 8)>; 
         };
     };
 
@@ -34,13 +42,21 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
+                    <NRF_PSEL(SPIM_MISO, 0, 8)>;
             low-power-enable;
         };
     };
 };
 
+/* 2. Configure the Bus & Chip Select */
 &pro_micro_spi {
     status = "okay";
+    
+    /* Use the custom pins defined above */
     pinctrl-0 = <&spi0_custom>;
     pinctrl-1 = <&spi0_custom_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    /* Chip Select on D1 (Pin 1) */
+    cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>;
 };
