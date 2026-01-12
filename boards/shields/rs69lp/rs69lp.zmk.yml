@@ -3,7 +3,7 @@
 # for instructions.
 
 file_format: "1"
-id: rs69lp
+id: RS69LP
 name: RS69-LP
 type: shield
 
@@ -19,5 +19,5 @@ requires:
   - pro_micro
 
 siblings:
-  - rs69lp_left
-  - rs69lp_right
+  - RS69LP_LEFT
+  - RS69LP_RIGHT
